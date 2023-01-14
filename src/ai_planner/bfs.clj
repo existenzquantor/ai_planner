@@ -38,7 +38,7 @@
 (defn- extract-plan-recur [node plan]
   (if (nil? (node :parent))
     plan
-    (extract-plan-recur (node :parent) (concat (list (get-in node [:action :action :name])) plan))))
+    (extract-plan-recur (node :parent) (concat (list {:name (get-in node [:action :action :name]) :parameters (map :symbol (get-in node [:action :action :parameters]))}) plan))))
 
 (defn extract-plan [node]
   (extract-plan-recur node '()))
@@ -48,7 +48,7 @@
     (let [node (first queue)
           applicable-actions (filter (partial applicable? (get-in node [:state])) actions)]
       (if (subset? (set goal) (set (get-in node [:state])))
-        (extract-plan node) 
+        {:plan (extract-plan node)}
         (if (seq applicable-actions)
           (best-first-search-recur actions goal (concat (rest queue) (map (partial apply-action node) applicable-actions)))
           nil)))
