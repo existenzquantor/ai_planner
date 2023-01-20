@@ -1,4 +1,4 @@
-(defproject org.clojars.existenzquantor/ai_planner "0.1.3"
+(defproject org.clojars.existenzquantor/ai_planner "0.1.4"
   :description "An AI Planner supporting STRIPS with typing and negative preconditions"
   :url "https://github.com/existenzquantor/ai_planner"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
