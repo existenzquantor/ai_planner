@@ -7,7 +7,7 @@
 
 (defn a-star-search-recur [actions goal queue]
   (if (seq queue)
-    (let [node (first (sort-by :g queue))
+    (let [node (first (sort-by :f queue))
           applicable-actions (filter (partial applicable? (get-in node [:state])) actions)]
       (if (subset? (set goal) (set (get-in node [:state])))
         {:plan (extract-plan node)}
