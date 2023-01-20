@@ -13,10 +13,10 @@
 (defn -main [& args]
   (let [parsed (parse-and-ground (first args) (second args))]
     (cond (and (> (count args) 2) (= "bfs" (nth args 2))) (json/pprint (best-first-search
-                                                                        (complete-initial-state (get-in parsed [:PDDLProblem :init]) (get-in parsed [:PDDLDomain :grounding :predicates]))
+                                                                        (distinct (complete-initial-state (get-in parsed [:PDDLProblem :init]) (get-in parsed [:PDDLDomain :grounding :predicates])))
                                                                         (get-in parsed [:PDDLDomain :grounding :actions])
                                                                         (get-in parsed [:PDDLProblem :goal])))
           :else (json/pprint (a-star-search
-                              (complete-initial-state (get-in parsed [:PDDLProblem :init]) (get-in parsed [:PDDLDomain :grounding :predicates]))
+                              (distinct (complete-initial-state (get-in parsed [:PDDLProblem :init]) (get-in parsed [:PDDLDomain :grounding :predicates])))
                               (get-in parsed [:PDDLDomain :grounding :actions])
                               (get-in parsed [:PDDLProblem :goal]))))))

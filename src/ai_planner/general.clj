@@ -1,5 +1,6 @@
 (ns ai-planner.general
-  (:require [pddl-parse-and-ground.parser :refer [in?]]))
+  (:require [pddl-parse-and-ground.parser :refer [in?]])
+  (:require [clojure.set :refer [subset?]]))
 
 (defn formula-as-list [formula]
   (if (= 'and (get-in formula [:operator]))
@@ -12,27 +13,17 @@
     {:operator 'not :atom atom}))
 
 (defn delete-effect [effect state]
-  (if (empty? effect)
-    state
-    (delete-effect (rest effect) (remove #(= (first effect) %) state))))
+  (filter #(not (in? effect %)) state))
 
 (defn apply-action [node action]
-  (let [state (set (get-in node [:state]))
-        effect (formula-as-list (get-in action [:action :effect]))
-        del (delete-effect effect state)
-        state-new (concat (delete-effect (map negation-of-atom effect) del) effect)]
-    {:state state-new :action action :parent node}))
-
-(defn all-preconditions-met? [preconditions state]
-  (cond
-    (empty? preconditions) true
-    (not (in? state (first preconditions))) false
-    :else (all-preconditions-met? (rest preconditions) state)))
+  (let [state (get-in node [:state])
+        effect (formula-as-list (get-in action [:action :effect]))]
+    {:state (distinct (concat (delete-effect (map negation-of-atom effect) state) effect)) :action action :parent node}))
 
 (defn applicable? [state action]
   (cond
     (empty? (get-in action [:action :precondition])) true
-    :else (all-preconditions-met? (formula-as-list (get-in action [:action :precondition])) state)))
+    :else (subset? (set (formula-as-list (get-in action [:action :precondition]))) (set state))))
 
 (defn- extract-plan-recur [node plan]
   (if (nil? (node :parent))
@@ -41,3 +32,13 @@
 
 (defn extract-plan [node]
   (extract-plan-recur node '()))
+
+(defn find-state-in-parents [state current]
+  (cond
+    (nil? (current :action)) false
+    (nil? ((current :parent) :action)) (= state ((current :parent) :state))
+    (not= state ((current :parent) :state)) (find-state-in-parents state (current :parent))
+    :else true))
+
+(defn has-distinct-state? [node]
+  (not (find-state-in-parents (node :state) node)))
