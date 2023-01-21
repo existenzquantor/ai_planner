@@ -1,5 +1,5 @@
-(ns ai-planner.bfs
-  (:require [clojure.set :refer [subset? union]])
+(ns ai-planner.search.bfs
+  (:require [clojure.set :refer [subset?]])
   (:require [ai-planner.general :refer[applicable? extract-plan formula-as-list apply-action has-distinct-state?]]))
 
 (defn best-first-search-recur [actions goal queue]
@@ -11,5 +11,6 @@
         (when (seq applicable-actions)
           (best-first-search-recur actions goal (concat (rest queue) (filter has-distinct-state? (map (partial apply-action node) applicable-actions)))))))))
 
-(defn best-first-search [initial-state actions goal]
+(defn run [initial-state actions goal]
   (best-first-search-recur actions (formula-as-list goal) (list {:state initial-state :action nil :parent nil})))
+
