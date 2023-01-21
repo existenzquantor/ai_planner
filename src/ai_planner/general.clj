@@ -1,6 +1,12 @@
 (ns ai-planner.general
   (:require [pddl-parse-and-ground.parser :refer [in?]])
-  (:require [clojure.set :refer [subset?]]))
+  (:require [clojure.set :refer [subset? intersection]]))
+
+(defn goal? [goal-set state-set] 
+  (subset? goal-set state-set))
+
+(defn number-of-common-literals [set1 set2]
+  (count (intersection set1 set2)))
 
 (defn formula-as-list [formula]
   (if (= 'and (get-in formula [:operator]))
