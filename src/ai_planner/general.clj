@@ -23,18 +23,18 @@
 
 (defn apply-action [node action]
   (let [state (get-in node [:state])
-        effect (formula-as-list (get-in action [:action :effect]))]
+        effect (formula-as-list (get-in action [:effect]))]
     {:state (distinct (concat (delete-effect (map negation-of-atom effect) state) effect)) :action action :parent node}))
 
 (defn applicable? [state action]
   (cond
-    (empty? (get-in action [:action :precondition])) true
-    :else (subset? (set (formula-as-list (get-in action [:action :precondition]))) (set state))))
+    (empty? (get-in action [:precondition])) true
+    :else (subset? (set (formula-as-list (get-in action [:precondition]))) (set state))))
 
 (defn- extract-plan-recur [node plan]
   (if (nil? (node :parent))
     plan
-    (extract-plan-recur (node :parent) (concat (list {:name (get-in node [:action :action :name]) :parameters (map :symbol (get-in node [:action :action :parameters]))}) plan))))
+    (extract-plan-recur (node :parent) (concat (list {:name (get-in node [:action :name]) :parameters (map :symbol (get-in node [:action :parameters]))}) plan))))
 
 (defn extract-plan [node]
   (extract-plan-recur node '()))

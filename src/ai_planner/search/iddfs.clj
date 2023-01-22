@@ -1,4 +1,4 @@
-(ns ai-planner.search.idfs
+(ns ai-planner.search.iddfs
     (:require [ai-planner.general :refer [applicable? extract-plan formula-as-list apply-action has-distinct-state? goal?]]))
 
 (defn num-parents-recur [node c]
